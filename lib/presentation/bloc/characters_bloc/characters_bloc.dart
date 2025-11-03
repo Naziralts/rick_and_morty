@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:rick_and_morty_app/data/models/character.dart';
+import 'package:rick_and_morty_app/data/model/character.dart';
 import 'package:rick_and_morty_app/data/repository/character_repository.dart';
+
 
 part 'characters_event.dart';
 part 'characters_state.dart';
@@ -16,11 +17,13 @@ class CharactersBloc extends Bloc<CharactersEvent, CharactersState> {
   }
 
   Future<void> _onCharactersFetched(
-      CharactersFetched event, Emitter<CharactersState> emit) async {
+    CharactersFetched event,
+    Emitter<CharactersState> emit,
+  ) async {
     if (state.hasReachedMax) return;
 
     try {
-      
+      // Если первая загрузка
       if (state.status == CharactersStatus.initial) {
         final characters = await repository.fetchCharacters(1);
         emit(state.copyWith(
@@ -32,7 +35,7 @@ class CharactersBloc extends Bloc<CharactersEvent, CharactersState> {
         return;
       }
 
-     
+      // Загрузка следующей страницы
       final nextPage = state.page + 1;
       final characters = await repository.fetchCharacters(nextPage);
 
@@ -43,15 +46,19 @@ class CharactersBloc extends Bloc<CharactersEvent, CharactersState> {
           status: CharactersStatus.success,
           characters: List.of(state.characters)..addAll(characters),
           page: nextPage,
+          hasReachedMax: false,
         ));
       }
-    } catch (_) {
+    } catch (e) {
       emit(state.copyWith(status: CharactersStatus.failure));
     }
   }
 
+  /// Полное обновление списка (pull-to-refresh)
   Future<void> _onCharactersRefreshed(
-      CharactersRefreshed event, Emitter<CharactersState> emit) async {
+    CharactersRefreshed event,
+    Emitter<CharactersState> emit,
+  ) async {
     try {
       emit(state.copyWith(status: CharactersStatus.loading));
       final characters = await repository.fetchCharacters(1);

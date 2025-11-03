@@ -7,12 +7,12 @@ abstract class CharactersEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-/// Событие: загрузить персонажей (следующая страница)
+/// Загрузка следующей страницы персонажей
 class CharactersFetched extends CharactersEvent {
   const CharactersFetched();
 }
 
-/// Событие: обновить список (pull-to-refresh)
+/// Полное обновление списка
 class CharactersRefreshed extends CharactersEvent {
   const CharactersRefreshed();
 }

@@ -1,12 +1,8 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:http/http.dart' as http;
+import '../../core/api/characters_api.dart';
+import '../model/character.dart';
 
-import 'package:rick_and_morty_app/core/api/characters_api.dart';
-
-import '../models/character.dart';
-
-/// Репозиторий объединяет работу с сетью (Rick & Morty API),
-/// локальным кэшем (Hive) и избранными персонажами.
 class CharacterRepository {
   final http.Client client;
   final CharactersApi _api;
@@ -17,18 +13,17 @@ class CharacterRepository {
 
   CharacterRepository(this.client) : _api = CharactersApi(client);
 
-  /// Загружает персонажей из API и кэширует результат
-  /// Если нет интернета — берёт данные из Hive.
+  /// Получение списка персонажей с API
+  /// Если нет интернета — берёт из кеша (Hive)
   Future<List<Character>> fetchCharacters(int page) async {
     try {
       final characters = await _api.fetchCharacters(page);
 
-      
-      _cacheBox.put('page_$page', characters.map((c) => c?.toMap()).toList());
-
+      // Кэшируем данные (каждая страница отдельно)
+      _cacheBox.put('page_$page', characters.map((c) => c.toMap()).toList());
       return characters;
     } catch (error) {
-
+      // При ошибке сети — возвращаем кеш, если он есть
       final cached = _cacheBox.get('page_$page');
       if (cached != null) {
         return (cached as List)
@@ -39,6 +34,11 @@ class CharacterRepository {
     }
   }
 
+  // -----------------------
+  // ❤️ Работа с избранными
+  // -----------------------
+
+  /// Получаем список избранных персонажей
   List<Character> getFavorites() {
     final ids = _favoritesBox.get('favorites', defaultValue: <int>[]) as List;
     return ids.map((id) {
@@ -50,16 +50,15 @@ class CharacterRepository {
     }).whereType<Character>().toList();
   }
 
-
+  /// Проверка: находится ли персонаж в избранном
   bool isFavorite(int id) {
     final ids = _favoritesBox.get('favorites', defaultValue: <int>[]) as List;
     return ids.contains(id);
   }
 
-
+  /// Добавление персонажа в избранное
   void addFavorite(Character character) {
     final ids = _favoritesBox.get('favorites', defaultValue: <int>[]) as List;
-
     if (!ids.contains(character.id)) {
       ids.add(character.id);
       _favoritesBox.put('favorites', ids);
@@ -67,6 +66,7 @@ class CharacterRepository {
     }
   }
 
+  /// Удаление персонажа из избранного
   void removeFavorite(int id) {
     final ids = _favoritesBox.get('favorites', defaultValue: <int>[]) as List;
     ids.remove(id);
@@ -74,13 +74,12 @@ class CharacterRepository {
     _favoritesBox.delete('fav_$id');
   }
 
-
-
+  /// Очистка всех кешированных данных
   Future<void> clearCache() async {
     await _cacheBox.clear();
   }
 
-  
+  /// Очистка избранного (опционально)
   Future<void> clearFavorites() async {
     await _favoritesBox.clear();
   }

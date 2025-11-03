@@ -5,54 +5,45 @@ class Character {
   final String name;
   final String status;
   final String species;
-  final String gender;
   final String image;
-  final String origin;
-  final String location;
+  final String locationName;
 
   const Character({
     required this.id,
     required this.name,
     required this.status,
     required this.species,
-    required this.gender,
     required this.image,
-    required this.origin,
-    required this.location,
+    required this.locationName,
   });
 
-  /// Создание объекта из JSON
+  /// Создание Character из JSON Map
   factory Character.fromMap(Map<String, dynamic> map) {
     return Character(
       id: map['id'] ?? 0,
       name: map['name'] ?? 'Unknown',
       status: map['status'] ?? 'Unknown',
       species: map['species'] ?? 'Unknown',
-      gender: map['gender'] ?? 'Unknown',
       image: map['image'] ?? '',
-      origin: map['origin']?['name'] ?? 'Unknown',
-      location: map['location']?['name'] ?? 'Unknown',
+      locationName: map['location']?['name'] ?? 'Unknown',
     );
   }
 
-  /// Конвертация в Map для сохранения в Hive
+  /// Преобразование Character в Map
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'name': name,
       'status': status,
       'species': species,
-      'gender': gender,
       'image': image,
-      'origin': origin,
-      'location': location,
+      'location': {'name': locationName},
     };
   }
 
-  /// JSON сериализация
+  /// Для хранения/чтения в Hive (строковый формат)
   String toJson() => json.encode(toMap());
 
-  /// JSON десериализация
   factory Character.fromJson(String source) =>
       Character.fromMap(json.decode(source) as Map<String, dynamic>);
 
@@ -62,20 +53,16 @@ class Character {
     String? name,
     String? status,
     String? species,
-    String? gender,
     String? image,
-    String? origin,
-    String? location,
+    String? locationName,
   }) {
     return Character(
       id: id ?? this.id,
       name: name ?? this.name,
       status: status ?? this.status,
       species: species ?? this.species,
-      gender: gender ?? this.gender,
       image: image ?? this.image,
-      origin: origin ?? this.origin,
-      location: location ?? this.location,
+      locationName: locationName ?? this.locationName,
     );
   }
 

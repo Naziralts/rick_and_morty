@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:rick_and_morty_app/data/models/character.dart';
-import 'package:rick_and_morty_app/data/repository/character_repository.dart';
+import 'package:rick_and_morty_app/data/model/character.dart';
+import 'package:rick_and_morty_app/data/repository/character_repository.dart' show CharacterRepository;
 
 
 part 'favorites_event.dart';
@@ -16,8 +16,7 @@ class FavoritesBloc extends Bloc<FavoritesEvent, FavoritesState> {
     on<RemoveFavorite>(_onRemoveFavorite);
   }
 
-  void _onFavoritesLoaded(
-      FavoritesLoaded event, Emitter<FavoritesState> emit) {
+  void _onFavoritesLoaded(FavoritesLoaded event, Emitter<FavoritesState> emit) {
     final favorites = repository.getFavorites();
     emit(state.copyWith(favorites: favorites));
   }
