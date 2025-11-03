@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:rick_and_morty_app/presentation/bloc/characters_bloc/characters_bloc.dart';
 
 import '../widgets/character_card.dart';
-import 'package:go_router/go_router.dart';
 
 class HomePage extends StatefulWidget {
   final VoidCallback onToggleTheme;
-  const HomePage({super.key, required this.onToggleTheme, required bool isDarkMode});
+  final bool isDarkMode;
+
+  const HomePage({
+    super.key,
+    required this.onToggleTheme,
+    required this.isDarkMode,
+  });
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -19,8 +25,13 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    context.read<CharactersBloc>().add(const CharactersFetched());
     _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   void _onScroll() {
@@ -38,65 +49,47 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Rick and Morty'),
         actions: [
+          // ⭐ Переход в избранное
           IconButton(
-            icon: const Icon(Icons.brightness_6),
-            onPressed: widget.onToggleTheme,
-          ),
-          IconButton(
-            icon: const Icon(Icons.star),
+            icon: const Icon(Icons.star_border),
             onPressed: () => context.push('/favorites'),
+          ),
+          // 🌗 Переключатель темы
+          IconButton(
+            icon: Icon(widget.isDarkMode ? Icons.dark_mode : Icons.light_mode),
+            onPressed: widget.onToggleTheme,
           ),
         ],
       ),
       body: BlocBuilder<CharactersBloc, CharactersState>(
         builder: (context, state) {
           if (state.status == CharactersStatus.failure) {
-            return const Center(child: Text('Ошибка загрузки персонажей'));
+            return const Center(child: Text('Failed to load characters'));
           } else if (state.status == CharactersStatus.initial ||
               state.status == CharactersStatus.loading) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final characters = state.characters;
-
-          return LayoutBuilder(
-            builder: (context, constraints) {
-            
-              final crossAxisCount = constraints.maxWidth < 600
-                  ? 1
-                  : constraints.maxWidth < 900
-                      ? 2
-                      : 4;
-
-              return GridView.builder(
-                controller: _scrollController,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount,
-                  childAspectRatio: 0.9,
-                ),
-                itemCount: state.hasReachedMax
-                    ? characters.length
-                    : characters.length + 1,
-                itemBuilder: (context, index) {
-                  if (index >= characters.length) {
-                    return const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
-                  }
-
-                  final character = characters[index];
-                  return CharacterCard(character: character);
-                },
-              );
+          return ListView.builder(
+            controller: _scrollController,
+            itemCount: state.hasReachedMax
+                ? state.characters.length
+                : state.characters.length + 1,
+            itemBuilder: (context, index) {
+              if (index >= state.characters.length) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
+              final character = state.characters[index];
+              return CharacterCard(character: character);
             },
           );
         },
