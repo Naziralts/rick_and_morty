@@ -115,7 +115,6 @@ class _HomePageState extends State<HomePage>
 
                   final character = state.characters[index];
 
-                  // 🎞 Добавляем лёгкую анимацию появления
                   return TweenAnimationBuilder<double>(
                     tween: Tween(begin: 0, end: 1),
                     duration: Duration(milliseconds: 250 + (index % 10) * 30),
