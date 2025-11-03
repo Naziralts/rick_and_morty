@@ -17,7 +17,6 @@ class Character {
     required this.locationName,
   });
 
-  /// Создание Character из JSON Map
   factory Character.fromMap(Map<String, dynamic> map) {
     return Character(
       id: map['id'] ?? 0,
@@ -29,7 +28,6 @@ class Character {
     );
   }
 
-  /// Преобразование Character в Map
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -41,13 +39,13 @@ class Character {
     };
   }
 
-  /// Для хранения/чтения в Hive (строковый формат)
+
   String toJson() => json.encode(toMap());
 
   factory Character.fromJson(String source) =>
       Character.fromMap(json.decode(source) as Map<String, dynamic>);
 
-  /// Копия с изменениями
+
   Character copyWith({
     int? id,
     String? name,

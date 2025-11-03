@@ -9,7 +9,7 @@ class CharactersApi {
 
   CharactersApi(this.client);
 
-  /// Загружает список персонажей с указанной страницы
+
   Future<List<Character>> fetchCharacters(int page) async {
     final uri = Uri.parse('$_baseUrl?page=$page');
     final response = await client.get(uri);
