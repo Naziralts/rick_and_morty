@@ -8,17 +8,14 @@ Future<void> main() async {
 
 WidgetsFlutterBinding.ensureInitialized();
 
-// Инициализация Hive
+
 
 await Hive.initFlutter();
 
-// Открываем боксы (Hive хранилища)
 
-await Hive.openBox('cache_box');      // Кеш страниц персонажей
+await Hive.openBox('cache_box');      
+await Hive.openBox('favorites_box');  
 
-await Hive.openBox('favorites_box');  // Избранные персонажи
-
-// Запуск приложения
 
 runApp(const MyApp());
 
