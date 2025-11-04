@@ -52,3 +52,4 @@
   ```dart
   location: map['location']?['name'] ?? 'Unknown',
   origin: map['origin']?['name'] ?? 'Unknown',
+  assets/demo.mp4 // запись экрана приложений
