@@ -55,9 +55,15 @@
 ## 🖼 Screenshots
 
 <p align="center">
+  <img src="assets/screenshots/rick_morty.onboard.jpg" width="250" alt="Onboarding Screen">
   <img src="assets/screenshots/rick_morty.byname.jpg" width="250" alt="Search by Name">
   <img src="assets/screenshots/rick_morty.dark.onboard.jpg" width="250" alt="Dark Onboarding">
   <img src="assets/screenshots/rick_morty.darkfavorites.jpg" width="250" alt="Dark Favorites">
   <img src="assets/screenshots/rick_morty.detail.jpg" width="250" alt="Character Detail">
   <img src="assets/screenshots/rick_morty.detail.dark.jpg" width="250" alt="Character Detail Dark">
+</p>
+## 🎬 Demo Preview
+
+<p align="center">
+  <img src="assets/demo/demo.gif" width="320" alt="Rick and Morty App Demo">
 </p>
